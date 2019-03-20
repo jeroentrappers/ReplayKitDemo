@@ -7,7 +7,10 @@
 //
 
 import UIKit
+import SpriteKit
 import ReplayKit
+import CoreVideo
+import VideoToolbox
 
 class ViewController: UIViewController, RPPreviewViewControllerDelegate {
     
@@ -16,6 +19,7 @@ class ViewController: UIViewController, RPPreviewViewControllerDelegate {
     @IBOutlet var colorDisplay: UIView!
     @IBOutlet var recordButton: UIButton!
     @IBOutlet var micToggle: UISwitch!
+    @IBOutlet var mirrorView: UIImageView!
     
     let recorder = RPScreenRecorder.shared()
     private var isRecording = false
@@ -68,65 +72,77 @@ class ViewController: UIViewController, RPPreviewViewControllerDelegate {
             print("Recording is not available at this time.")
             return
         }
-        
+        /*
         if micToggle.isOn {
             recorder.isMicrophoneEnabled = true
         } else {
             recorder.isMicrophoneEnabled = false
-        }
+        }*/
+        recorder.isMicrophoneEnabled = false
         
-        recorder.startRecording{ [unowned self] (error) in
-            
+        recorder.startCapture(handler: sampleHandler,
+                              completionHandler:
+        { (error) in
             guard error == nil else {
                 print("There was an error starting the recording.")
                 return
             }
             
             print("Started Recording Successfully")
-            self.micToggle.isEnabled = false
-            self.recordButton.backgroundColor = UIColor.red
-            self.statusLabel.text = "Recording..."
-            self.statusLabel.textColor = UIColor.red
-            
             self.isRecording = true
+            DispatchQueue.main.async {
+                self.micToggle.isEnabled = false
+                self.recordButton.backgroundColor = UIColor.red
+                self.statusLabel.text = "Recording..."
+                self.statusLabel.textColor = UIColor.red
+            }
 
-        }
+        })
         
+    }
+    
+    func sampleHandler(buffer: CMSampleBuffer, bufferType: RPSampleBufferType, error: Error?) {
+        guard error == nil else {
+            print("Error handling sample \(error!)")
+            return
+        }
+        var format = CMSampleBufferGetFormatDescription(buffer)
+        var numsamples = CMSampleBufferGetNumSamples(buffer)
+        var size = CMSampleBufferGetSampleSize(buffer, 0)
+        
+        
+        switch bufferType {
+        case .audioApp, .audioMic:
+            return
+        case .video:
+            guard numsamples == 1 else {
+                print("More than 1 sample received, what's this?")
+                return
+            }
+            var image = CMSampleBufferGetImageBuffer(buffer) as! CVPixelBuffer
+            if image == nil {
+                print("Not a Pixel buffer, what now?")
+                return
+            }
+            var cgImage: CGImage?
+            var status = VTCreateCGImageFromCVPixelBuffer(image, nil, &cgImage)
+            
+            var image_ui = UIImage(cgImage: cgImage!)
+            DispatchQueue.main.async {
+                self.mirrorView.image = image_ui
+            }
+            return
+        default:
+            print("unknown buffer type \(bufferType.rawValue)")
+        }
     }
     
     func stopRecording() {
         
-        recorder.stopRecording { [unowned self] (preview, error) in
-            print("Stopped recording")
-            
-            guard preview != nil else {
-                print("Preview controller is not available.")
-                return
-            }
-            
-            let alert = UIAlertController(title: "Recording Finished", message: "Would you like to edit or delete your recording?", preferredStyle: .alert)
-            
-            let deleteAction = UIAlertAction(title: "Delete", style: .destructive, handler: { (action: UIAlertAction) in
-                self.recorder.discardRecording(handler: { () -> Void in
-                    print("Recording suffessfully deleted.")
-                })
-            })
-            
-            let editAction = UIAlertAction(title: "Edit", style: .default, handler: { (action: UIAlertAction) -> Void in
-                preview?.previewControllerDelegate = self
-                self.present(preview!, animated: true, completion: nil)
-            })
-            
-            alert.addAction(editAction)
-            alert.addAction(deleteAction)
-            self.present(alert, animated: true, completion: nil)
-            
+        recorder.stopRecording { [unowned self] (error) in
             self.isRecording = false
-            
             self.viewReset()
-            
         }
-        
     }
     
     func previewControllerDidFinish(_ previewController: RPPreviewViewController) {
