@@ -18,7 +18,6 @@ class ViewController: UIViewController, RPPreviewViewControllerDelegate {
     @IBOutlet var colorPicker: UISegmentedControl!
     @IBOutlet var colorDisplay: UIView!
     @IBOutlet var recordButton: UIButton!
-    @IBOutlet var micToggle: UISwitch!
     @IBOutlet var mirrorView: UIImageView!
     
     let recorder = RPScreenRecorder.shared()
@@ -35,7 +34,6 @@ class ViewController: UIViewController, RPPreviewViewControllerDelegate {
     }
     
     func viewReset() {
-        micToggle.isEnabled = true
         statusLabel.text = "Ready to Record"
         statusLabel.textColor = UIColor.black
         recordButton.backgroundColor = UIColor.green
@@ -72,14 +70,7 @@ class ViewController: UIViewController, RPPreviewViewControllerDelegate {
             print("Recording is not available at this time.")
             return
         }
-        /*
-        if micToggle.isOn {
-            recorder.isMicrophoneEnabled = true
-        } else {
-            recorder.isMicrophoneEnabled = false
-        }*/
         recorder.isMicrophoneEnabled = false
-        
         recorder.startCapture(handler: sampleHandler,
                               completionHandler:
         { (error) in
@@ -91,7 +82,6 @@ class ViewController: UIViewController, RPPreviewViewControllerDelegate {
             print("Started Recording Successfully")
             self.isRecording = true
             DispatchQueue.main.async {
-                self.micToggle.isEnabled = false
                 self.recordButton.backgroundColor = UIColor.red
                 self.statusLabel.text = "Recording..."
                 self.statusLabel.textColor = UIColor.red
@@ -106,10 +96,7 @@ class ViewController: UIViewController, RPPreviewViewControllerDelegate {
             print("Error handling sample \(error!)")
             return
         }
-        var format = CMSampleBufferGetFormatDescription(buffer)
-        var numsamples = CMSampleBufferGetNumSamples(buffer)
-        var size = CMSampleBufferGetSampleSize(buffer, 0)
-        
+        let numsamples = CMSampleBufferGetNumSamples(buffer)
         
         switch bufferType {
         case .audioApp, .audioMic:
@@ -119,15 +106,15 @@ class ViewController: UIViewController, RPPreviewViewControllerDelegate {
                 print("More than 1 sample received, what's this?")
                 return
             }
-            var image = CMSampleBufferGetImageBuffer(buffer) as! CVPixelBuffer
+            let image = CMSampleBufferGetImageBuffer(buffer) as CVPixelBuffer?
             if image == nil {
                 print("Not a Pixel buffer, what now?")
                 return
             }
             var cgImage: CGImage?
-            var status = VTCreateCGImageFromCVPixelBuffer(image, nil, &cgImage)
+            VTCreateCGImageFromCVPixelBuffer(image!, options: nil, imageOut: &cgImage)
             
-            var image_ui = UIImage(cgImage: cgImage!)
+            let image_ui = UIImage(cgImage: cgImage!)
             DispatchQueue.main.async {
                 self.mirrorView.image = image_ui
             }
@@ -139,9 +126,11 @@ class ViewController: UIViewController, RPPreviewViewControllerDelegate {
     
     func stopRecording() {
         
-        recorder.stopRecording { [unowned self] (error) in
-            self.isRecording = false
-            self.viewReset()
+        recorder.stopCapture { [unowned self] (error) in
+            DispatchQueue.main.async {
+                self.isRecording = false
+                self.viewReset()
+            }
         }
     }
     

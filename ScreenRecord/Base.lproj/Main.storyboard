@@ -35,21 +35,10 @@
                                 </connections>
                             </segmentedControl>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FR1-wN-ugT">
-                                <rect key="frame" x="112" y="188" width="150" height="150"/>
+                                <rect key="frame" x="37" y="155" width="93" height="98"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.89411764709999997" green="0.23529411759999999" blue="0.090196078430000007" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </view>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bW9-99-z0c">
-                                <rect key="frame" x="37" y="188" width="51" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </switch>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Microphone" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nkD-Yl-0Nm">
-                                <rect key="frame" x="16" y="159" width="92" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Ready to Record" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5JB-hE-71K">
                                 <rect key="frame" x="124" y="28" width="127" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -58,15 +47,15 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PY8-9a-kBE">
-                                <rect key="frame" x="273" y="188" width="65" height="65"/>
+                                <rect key="frame" x="273" y="155" width="65" height="65"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.29803921568627451" green="0.84705882352941175" blue="0.396078431372549" alpha="1" colorSpace="calibratedRGB"/>
                                 <connections>
                                     <action selector="recordButtonTapped" destination="BYZ-38-t0r" eventType="touchUpInside" id="Cqj-XU-oUy"/>
                                 </connections>
                             </button>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zfL-Vn-PpP">
-                                <rect key="frame" x="0.0" y="394" width="375" height="273"/>
+                            <imageView userInteractionEnabled="NO" alpha="0.69999999999999996" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zfL-Vn-PpP">
+                                <rect key="frame" x="16" y="28" width="343" height="619"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                         </subviews>
@@ -75,7 +64,6 @@
                     <connections>
                         <outlet property="colorDisplay" destination="FR1-wN-ugT" id="WJz-JO-JqM"/>
                         <outlet property="colorPicker" destination="XYc-dA-4sO" id="XMx-VA-ABH"/>
-                        <outlet property="micToggle" destination="bW9-99-z0c" id="FCj-u7-heN"/>
                         <outlet property="mirrorView" destination="zfL-Vn-PpP" id="VrB-xl-RYB"/>
                         <outlet property="recordButton" destination="PY8-9a-kBE" id="qtf-hX-7CU"/>
                         <outlet property="statusLabel" destination="5JB-hE-71K" id="Lgs-64-YfB"/>
